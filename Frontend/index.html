@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventHub - Online Event Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --danger: #dc3545;
+            --success-green: #28a745;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background-color: #d81159;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-export {
+            background-color: var(--success-green);
+        }
+        
+        .btn-export:hover {
+            background-color: #218838;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin: 60px 0 40px;
+            font-size: 2rem;
+            color: var(--dark);
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        /* Events Section */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .event-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .event-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .event-image {
+            height: 200px;
+            background-color: var(--light);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .event-content {
+            padding: 20px;
+        }
+        
+        .event-date {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .event-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .event-description {
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .event-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Event Actions */
+        .event-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .event-actions .btn {
+            flex: 1;
+            min-width: 120px;
+            font-size: 0.9rem;
+            padding: 10px 15px;
+        }
+        
+        /* Create Event Section */
+        .create-event-section {
+            background-color: white;
+            padding: 60px 0;
+            margin: 40px 0;
+        }
+        
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Registration Form */
+        .registration-section {
+            background-color: var(--light-gray);
+            padding: 60px 0;
+            margin: 40px 0;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #495057;
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+        
+        /* Confirmation Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .modal-buttons .btn {
+            min-width: 100px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background-color: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                margin: 10px 0;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .event-card {
+                margin-bottom: 20px;
+            }
+            
+            .event-actions {
+                flex-direction: column;
+            }
+            
+            .event-actions .btn {
+                min-width: 100%;
+            }
+        }
+        
+        /* Success Message */
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            background-color: var(--light-gray);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            z-index: 1001;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .toast.success {
+            background-color: var(--success-green);
+        }
+        
+        .toast.error {
+            background-color: var(--danger);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">Event<span>Hub</span></a>
+                <ul class="nav-links">
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="#events">Events</a></li>
+                    <li><a href="#create">Create Event</a></li>
+                    <li><a href="#register">Register</a></li>
+                </ul>
+                <div class="mobile-menu">☰</div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Create and Discover Amazing Events</h1>
+            <p>Host your own events or join thousands of participants in conferences, workshops, and networking events across India.</p>
+            <a href="#create" class="btn btn-accent">Create Your Event</a>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section class="container" id="events">
+        <h2 class="section-title">Upcoming Events</h2>
+        
+        <div class="filter-section">
+            <div class="filter-options">
+                <button class="filter-btn active" data-filter="all">All Events</button>
+                <button class="filter-btn" data-filter="tech">Tech & Innovation</button>
+                <button class="filter-btn" data-filter="business">Business</button>
+                <button class="filter-btn" data-filter="health">Health & Wellness</button>
+                <button class="filter-btn" data-filter="culture">Arts & Culture</button>
+            </div>
+        </div>
+        
+        <div class="events-grid" id="eventsContainer">
+            <!-- Events will be dynamically added here -->
+            <div class="loading-message">Loading events...</div>
+        </div>
+        
+        <div id="loadingSpinner" class="spinner hidden"></div>
+    </section>
+
+    <!-- Create Event Section -->
+    <section class="create-event-section" id="create">
+        <div class="container">
+            <div class="form-container">
+                <h2 class="form-title">Create a New Event</h2>
+                <div class="success-message" id="createSuccess">
+                    <i class="fas fa-check-circle"></i> Your event has been created successfully!
+                </div>
+                <div class="error-message" id="createError">
+                    <i class="fas fa-exclamation-circle"></i> <span id="createErrorText"></span>
+                </div>
+                <form id="createEventForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventTitle">Event Title</label>
+                            <input type="text" id="eventTitle" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventCategory">Category</label>
+                            <select id="eventCategory" class="form-control" required>
+                                <option value="">Select Category</option>
+                                <option value="tech">Tech & Innovation</option>
+                                <option value="business">Business</option>
+                                <option value="health">Health & Wellness</option>
+                                <option value="culture">Arts & Culture</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eventDescription">Event Description</label>
+                        <textarea id="eventDescription" class="form-control" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDate">Event Date</label>
+                            <input type="date" id="eventDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventTime">Event Time</label>
+                            <input type="time" id="eventTime" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventLocation">Location</label>
+                            <input type="text" id="eventLocation" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventCapacity">Max Attendees</label>
+                            <input type="number" id="eventCapacity" class="form-control" min="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventImage">Event Image URL</label>
+                            <input type="url" id="eventImage" class="form-control" placeholder="https://example.com/image.jpg">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventPrice">Ticket Price (₹)</label>
+                            <input type="number" id="eventPrice" class="form-control" min="0" value="0" step="0.01">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn" style="width: 100%;">Create Event</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Section -->
+    <section class="registration-section" id="register">
+        <div class="container">
+            <div class="form-container">
+                <h2 class="form-title">Event Registration</h2>
+                <div class="success-message" id="registerSuccess">
+                    <i class="fas fa-check-circle"></i> You have successfully registered for the event!
+                </div>
+                <div class="error-message" id="registerError">
+                    <i class="fas fa-exclamation-circle"></i> <span id="registerErrorText"></span>
+                </div>
+                <form id="registrationForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="event">Select Event</label>
+                        <select id="event" class="form-control" required>
+                            <option value="">Choose an event</option>
+                            <!-- Events will be dynamically populated -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tickets">Number of Tickets</label>
+                        <select id="tickets" class="form-control" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="comments">Special Requirements</label>
+                        <textarea id="comments" class="form-control" rows="4"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn" style="width: 100%;">Complete Registration</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete this event? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-danger" id="confirmDelete">Delete Event</button>
+                <button class="btn" id="cancelDelete">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EventHub</h3>
+                    <p>Your premier platform for creating, discovering, and registering for events across India.</p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#create">Create Event</a></li>
+                        <li><a href="#register">Register</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> bhumikasomarapu@gmail.com</li>
+                        <li><i class="fas fa-phone"></i> +91 6305742817</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Chennai, Tamilnadu, India</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Follow Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 EventHub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // API Base URL
+        const API_BASE = 'http://localhost:3000/api';
+
+        // Frontend Application
+        class EventHubApp {
+            constructor() {
+                this.initializeApp();
+            }
+            
+            initializeApp() {
+                this.cacheDomElements();
+                this.bindEvents();
+                this.loadEvents();
+            }
+            
+            cacheDomElements() {
+                // DOM Elements
+                this.eventsContainer = document.getElementById('eventsContainer');
+                this.eventSelect = document.getElementById('event');
+                this.createEventForm = document.getElementById('createEventForm');
+                this.registrationForm = document.getElementById('registrationForm');
+                this.createSuccess = document.getElementById('createSuccess');
+                this.registerSuccess = document.getElementById('registerSuccess');
+                this.createError = document.getElementById('createError');
+                this.registerError = document.getElementById('registerError');
+                this.createErrorText = document.getElementById('createErrorText');
+                this.registerErrorText = document.getElementById('registerErrorText');
+                this.mobileMenu = document.querySelector('.mobile-menu');
+                this.navLinks = document.querySelector('.nav-links');
+                this.filterBtns = document.querySelectorAll('.filter-btn');
+                this.loadingSpinner = document.getElementById('loadingSpinner');
+                this.deleteModal = document.getElementById('deleteModal');
+                this.confirmDelete = document.getElementById('confirmDelete');
+                this.cancelDelete = document.getElementById('cancelDelete');
+                
+                this.eventToDelete = null;
+            }
+            
+            bindEvents() {
+                // Mobile menu toggle
+                this.mobileMenu.addEventListener('click', () => {
+                    this.navLinks.classList.toggle('active');
+                });
+                
+                // Filter buttons
+                this.filterBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const filter = e.target.getAttribute('data-filter');
+                        
+                        // Update active filter
+                        this.filterBtns.forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        
+                        // Load filtered events
+                        this.loadEvents(filter);
+                    });
+                });
+                
+                // Create event form submission
+                this.createEventForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleCreateEvent();
+                });
+                
+                // Registration form submission
+                this.registrationForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleRegistration();
+                });
+                
+                // Delete modal events
+                this.confirmDelete.addEventListener('click', () => {
+                    this.handleDeleteEvent();
+                });
+                
+                this.cancelDelete.addEventListener('click', () => {
+                    this.hideDeleteModal();
+                });
+                
+                // Event container click delegation
+                this.eventsContainer.addEventListener('click', (e) => {
+                    if (e.target.closest('.delete-btn')) {
+                        const eventId = e.target.closest('.delete-btn').getAttribute('data-event-id');
+                        this.showDeleteModal(eventId);
+                    }
+                    
+                    if (e.target.closest('.export-btn')) {
+                        const eventId = e.target.closest('.export-btn').getAttribute('data-event-id');
+                        this.exportEventCSV(eventId);
+                    }
+                    
+                    if (e.target.closest('.register-btn')) {
+                        const eventId = e.target.closest('.register-btn').getAttribute('data-event-id');
+                        this.eventSelect.value = eventId;
+                        
+                        // Scroll to registration form
+                        document.getElementById('register').scrollIntoView({ 
+                            behavior: 'smooth' 
+                        });
+                    }
+                });
+                
+                // Smooth scrolling for anchor links
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        
+                        const targetId = anchor.getAttribute('href');
+                        if (targetId === '#') return;
+                        
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                            
+                            // Close mobile menu if open
+                            this.navLinks.classList.remove('active');
+                        }
+                    });
+                });
+            }
+            
+            async loadEvents(filter = 'all') {
+                this.showLoading();
+                this.hideError(this.createError);
+                this.hideError(this.registerError);
+                
+                try {
+                    const url = filter === 'all' 
+                        ? `${API_BASE}/events` 
+                        : `${API_BASE}/events?category=${filter}`;
+                    
+                    console.log('Loading events from:', url);
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const events = await response.json();
+                    console.log('Loaded events:', events);
+                    this.renderEvents(events);
+                    this.populateEventSelect(events);
+                } catch (error) {
+                    console.error('Error loading events:', error);
+                    this.showError(this.createError, 'Error loading events. Please check if the server is running.');
+                    this.eventsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #dc3545;">Error loading events. Please make sure the server is running on http://localhost:3000</p>';
+                } finally {
+                    this.hideLoading();
+                }
+            }
+            
+            showLoading() {
+                this.loadingSpinner.classList.remove('hidden');
+                this.eventsContainer.innerHTML = '<div class="loading-message">Loading events...</div>';
+            }
+            
+            hideLoading() {
+                this.loadingSpinner.classList.add('hidden');
+            }
+            
+            showError(element, message) {
+                if (element.id === 'createError') {
+                    this.createErrorText.textContent = message;
+                } else if (element.id === 'registerError') {
+                    this.registerErrorText.textContent = message;
+                }
+                element.classList.add('show');
+            }
+            
+            hideError(element) {
+                element.classList.remove('show');
+            }
+            
+            renderEvents(events) {
+                this.eventsContainer.innerHTML = '';
+                
+                if (events.length === 0) {
+                    this.eventsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6c757d;">No events found in this category.</p>';
+                    return;
+                }
+                
+                events.forEach(event => {
+                    const eventCard = document.createElement('div');
+                    eventCard.className = 'event-card';
+                    
+                    const formattedDate = new Date(event.date + 'T' + event.time).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    const formattedTime = new Date(event.date + 'T' + event.time).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const isSoldOut = event.attendees >= event.capacity;
+                    
+                    eventCard.innerHTML = `
+                        <div class="event-image" style="background-image: url('${event.image || 'https://images.unsplash.com/photo-1542736667-069246bdbc6d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'}')"></div>
+                        <div class="event-content">
+                            <div class="event-date">${formattedDate} | ${formattedTime}</div>
+                            <h3 class="event-title">${event.title}</h3>
+                            <p class="event-description">${event.description}</p>
+                            <div class="event-meta">
+                                <span>📍 ${event.location}</span>
+                                <span>👥 ${event.attendees}/${event.capacity} attendees</span>
+                            </div>
+                            <div class="event-meta">
+                                <span>💰 ₹${event.price}</span>
+                                <span>🏷️ ${event.category}</span>
+                            </div>
+                            <div class="event-actions">
+                                ${isSoldOut 
+                                    ? '<button class="btn" disabled style="background-color: var(--gray);">Sold Out</button>' 
+                                    : `<button class="btn register-btn" data-event-id="${event.id}">Register Now</button>`
+                                }
+                                <button class="btn btn-danger delete-btn" data-event-id="${event.id}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                                <button class="btn btn-export export-btn" data-event-id="${event.id}">
+                                    <i class="fas fa-download"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    this.eventsContainer.appendChild(eventCard);
+                });
+            }
+            
+            populateEventSelect(events = null) {
+                if (!events) {
+                    // If no events provided, load all events
+                    fetch(`${API_BASE}/events`).then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Failed to load events');
+                    }).then(events => {
+                        this.updateEventSelect(events);
+                    }).catch(error => {
+                        console.error('Error loading events for registration:', error);
+                    });
+                } else {
+                    this.updateEventSelect(events);
+                }
+            }
+            
+            updateEventSelect(events) {
+                this.eventSelect.innerHTML = '<option value="">Choose an event</option>';
+                
+                events.forEach(event => {
+                    const option = document.createElement('option');
+                    option.value = event.id;
+                    option.textContent = event.title;
+                    option.disabled = event.attendees >= event.capacity;
+                    if (event.attendees >= event.capacity) {
+                        option.textContent += ' (Sold Out)';
+                    }
+                    this.eventSelect.appendChild(option);
+                });
+            }
+            
+            async handleCreateEvent() {
+                this.hideError(this.createError);
+                
+                try {
+                    // Get form values
+                    const formData = {
+                        title: document.getElementById('eventTitle').value,
+                        category: document.getElementById('eventCategory').value,
+                        description: document.getElementById('eventDescription').value,
+                        date: document.getElementById('eventDate').value,
+                        time: document.getElementById('eventTime').value,
+                        location: document.getElementById('eventLocation').value,
+                        capacity: parseInt(document.getElementById('eventCapacity').value),
+                        image: document.getElementById('eventImage').value,
+                        price: parseFloat(document.getElementById('eventPrice').value) || 0
+                    };
+                    
+                    console.log('Creating event:', formData);
+                    
+                    const response = await fetch(`${API_BASE}/events`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to create event');
+                    }
+                    
+                    // Show success message
+                    this.showToast('Event created successfully!', 'success');
+                    
+                    // Reset form
+                    this.createEventForm.reset();
+                    
+                    // Reload events
+                    this.loadEvents();
+                    
+                    // Scroll to events section
+                    document.getElementById('events').scrollIntoView({ behavior: 'smooth' });
+                } catch (error) {
+                    console.error('Error creating event:', error);
+                    this.showError(this.createError, 'Error creating event: ' + error.message);
+                }
+            }
+            
+            async handleRegistration() {
+                this.hideError(this.registerError);
+                
+                try {
+                    // Get form values
+                    const formData = {
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value,
+                        eventId: document.getElementById('event').value,
+                        tickets: parseInt(document.getElementById('tickets').value),
+                        comments: document.getElementById('comments').value
+                    };
+                    
+                    console.log('Submitting registration:', formData);
+                    
+                    const response = await fetch(`${API_BASE}/registrations`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Registration failed');
+                    }
+                    
+                    // Show success message
+                    this.showToast('Registration successful!', 'success');
+                    
+                    // Update UI
+                    this.loadEvents();
+                    
+                    // Reset form
+                    this.registrationForm.reset();
+                } catch (error) {
+                    console.error('Error registering for event:', error);
+                    this.showError(this.registerError, 'Error: ' + error.message);
+                }
+            }
+            
+            showDeleteModal(eventId) {
+                this.eventToDelete = eventId;
+                this.deleteModal.style.display = 'flex';
+            }
+            
+            hideDeleteModal() {
+                this.eventToDelete = null;
+                this.deleteModal.style.display = 'none';
+            }
+            
+            async handleDeleteEvent() {
+                if (!this.eventToDelete) return;
+                
+                try {
+                    const response = await fetch(`${API_BASE}/events/${this.eventToDelete}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to delete event');
+                    }
+                    
+                    // Show success message
+                    this.showToast('Event deleted successfully!', 'success');
+                    
+                    // Hide modal and reload events
+                    this.hideDeleteModal();
+                    this.loadEvents();
+                    
+                } catch (error) {
+                    console.error('Error deleting event:', error);
+                    this.showToast('Error deleting event: ' + error.message, 'error');
+                }
+            }
+            
+            async exportEventCSV(eventId) {
+                try {
+                    const response = await fetch(`${API_BASE}/events/${eventId}/export`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to export event data');
+                    }
+                    
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `event-${eventId}-registrations.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    this.showToast('CSV exported successfully!', 'success');
+                    
+                } catch (error) {
+                    console.error('Error exporting CSV:', error);
+                    this.showToast('Error exporting CSV: ' + error.message, 'error');
+                }
+            }
+            
+            showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    ${message}
+                `;
+                
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+        }
+
+        // Initialize the application when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new EventHubApp();
+        });
+    </script>
+</body>
+</html>
